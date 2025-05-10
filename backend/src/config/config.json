@@ -1,0 +1,29 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "12345678",
+    "database": "vehicle_rental",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "quoteIdentifiers": true,
+    "logging": false
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "database_test",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "use_env_variable": "DATABASE_URL",
+    "dialect": "postgres",
+    "quoteIdentifiers": true,
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
+  }
+}

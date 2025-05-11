@@ -88,26 +88,39 @@ const App = () => {
   };
 
   const handleBooking = async () => {
-    if (!validateStep()) return;
-    try {
-      const userRes = await axios.post('http://localhost:5000/api/users', {
-        firstName: data.firstName,
-        lastName: data.lastName
-      });
-      const userId = userRes.data.id;
+  try {
+    const userRes = await axios.post('http://localhost:5000/api/users', {
+      firstName: data.firstName,
+      lastName: data.lastName
+    });
 
-      await axios.post('http://localhost:5000/api/bookings', {
-        userId,
-        vehicleId: data.vehicleId,
-        startDate: data.startDate,
-        endDate: data.endDate
-      });
+    const userId = userRes.data.id;
 
-      alert('Booking successful!');
-    } catch (err) {
-      setError(err.response?.data?.error || 'Booking failed');
-    }
-  };
+    const booking = {
+      userId,
+      vehicleId: data.vehicleId,
+      startDate: data.startDate,
+      endDate: data.endDate
+    };
+
+    await axios.post('http://localhost:5000/api/bookings', booking);
+    alert('Booking successful!');
+
+    // Reset form data and go back to the first step
+    setData({
+      firstName: '',
+      lastName: '',
+      wheels: '',
+      vehicleTypeId: '',
+      vehicleId: '',
+      startDate: '',
+      endDate: ''
+    });
+    setStep(0);  // Redirect to first step
+  } catch (err) {
+    alert(err.response?.data?.error || 'Booking failed');
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-10">

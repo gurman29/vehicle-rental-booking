@@ -1,37 +1,44 @@
-const { VehicleType, Vehicle, Booking, User } = require('../models');
+const { VehicleType, Vehicle, Booking } = require('../models');
 const { Op } = require('sequelize');
 
 exports.getVehicleTypes = async (req, res) => {
   try {
     const { wheels } = req.query;
+    
+    // Validate wheels parameter
+    if (wheels && !['2', '4'].includes(wheels)) {
+      return res.status(400).json({ error: 'Wheels must be either 2 or 4' });
+    }
+
     const whereClause = wheels ? { wheels: parseInt(wheels) } : {};
     
     const vehicleTypes = await VehicleType.findAll({
       where: whereClause,
       include: [{
         model: Vehicle,
-        as: 'Vehicles' // Must match association alias
-      }]
+        as: 'Vehicles',
+        attributes: ['id', 'name']
+      }],
+      attributes: ['id', 'name', 'wheels']
     });
+
     res.json(vehicleTypes);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error fetching vehicle types:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-// NEW METHOD FOR VEHICLES BY TYPE
 exports.getVehiclesByType = async (req, res) => {
   try {
     const vehicles = await Vehicle.findAll({
-      where: { vehicleTypeId: req.params.id },
-      include: [{
-        model: VehicleType,
-        as: 'VehicleType'
-      }]
+      where: { vehicleTypeId: req.params.typeId },
+      attributes: ['id', 'name']
     });
-    res.json({ vehicles });
+    res.json(vehicles);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error fetching vehicles by type:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -56,6 +63,7 @@ exports.createBooking = async (req, res) => {
     const booking = await Booking.create({ userId, vehicleId, startDate, endDate });
     res.status(201).json(booking);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error creating booking:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };

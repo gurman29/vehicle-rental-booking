@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const routes = require('./routes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api', routes);
+app.use('/api', userRoutes);
 
 // Error handling
 app.use((err, req, res, next) => {
